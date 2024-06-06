@@ -13,13 +13,13 @@ import {
   Col,
 } from "react-bootstrap";
 
-import "./../assets/scss/light-bootstrap-dashboard-react.scss";
+import axios from "axios";
+import FormData from "form-data";
+const apiURL = "http://192.168.1.243:8080/formatter/api/";
 
 function ResumeFormat() {
   const [files, setFiles] = useState(null);
-
   const [fileUploaded, setFileUploaded] = useState(null);
-
   const inputRef = useRef();
 
   const handleDragOver = (event) => {
@@ -33,6 +33,22 @@ function ResumeFormat() {
 
   const handleUpload = (files) => {
     console.log("files uploaded:", files);
+
+    const form = new FormData();
+    form.append("files", files);
+    // form.append("my_buffer", new Buffer(10));
+    // form.append("my_file", fs.createReadStream("/foo/bar.jpg"));
+
+    axios
+      .post(apiURL + "uploadFiles", form)
+      .then((response) => {
+        console.log("Axios- -Raju -:", JSON.stringify(response));
+        // setPosts(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     setFileUploaded(true);
   };
 
