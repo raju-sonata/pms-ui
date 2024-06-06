@@ -90,46 +90,56 @@ function ResumeFormat() {
                             </li>
                           ))}
                         </ul>
-                        <hr></hr>
-                        <div className="actions">
-                          <Button
-                            type="button"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            data-bs-title="Select Files"
-                            onClick={() => setFiles(null)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="success"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            data-bs-title="Select Files"
-                            onClick={() => handleUpload(files)}
-                          >
-                            <i className="bi bi-upload">Upload files</i>
-                          </Button>
-                        </div>
                       </div>
-                    )}
-                    {fileUploaded && (
-                      <button className="btn btn-outline-primary" type="button">
-                        <i className="bi bi-file-earmark-check-fill">
-                          Format files
-                        </i>
-                      </button>
                     )}
                   </Col>
                 </Row>
                 <Row>
                   <Col md="12">
+                    <div className="actions">
+                      <Button
+                        type="button"
+                        variant="danger"
+                        style={{ width: "50%" }}
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        data-bs-title="Select Files"
+                        onClick={() => setFiles(null)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="success"
+                        style={{ width: "50%" }}
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        data-bs-title="Select Files"
+                        onClick={() => handleUpload(files)}
+                      >
+                        <i className="bi bi-upload">Upload files</i>
+                      </Button>
+                    </div>
                     {/* <button className="btn btn-outline-primary" type="button">
                       <i className="bi bi-file-earmark-check-fill">
                         Format files
                       </i>
                     </button> */}
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md="12">
+                    {fileUploaded && (
+                      <Button
+                        type="button"
+                        variant="primary"
+                        style={{ width: "100%" }}
+                      >
+                        <i className="bi bi-file-earmark-check-fill">
+                          Format files
+                        </i>
+                      </Button>
+                    )}
                   </Col>
                 </Row>
               </Card.Body>
@@ -140,16 +150,24 @@ function ResumeFormat() {
               <Card.Body>
                 <h5 className="card-title">Downloads</h5>
                 <div className="input-group">
-                  <button className="btn btn-outline-success" type="button">
+                  <Button
+                    type="button"
+                    variant="primary"
+                    style={{ width: "100%" }}
+                  >
                     <i className="bi bi-file-earmark-arrow-down-fill">
                       Formatted files
                     </i>
-                  </button>
-                  <button className="btn btn-outline-danger" type="button">
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    style={{ width: "100%" }}
+                  >
                     <i className="bi bi-file-earmark-arrow-down">
                       Unformatted files
                     </i>
-                  </button>
+                  </Button>
                 </div>
                 <hr></hr>
                 <h5 className="card-title">Downloaded times</h5>
