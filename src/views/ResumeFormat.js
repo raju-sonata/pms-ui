@@ -75,7 +75,9 @@ function ResumeFormat() {
                       <input
                         type="file"
                         multiple
-                        onChange={(event) => setFiles(event.target.files)}
+                        onChange={(event) =>
+                          setFiles([URL.createObjectURL(event.target.files[0])])
+                        }
                         hidden
                         ref={inputRef}
                         accept=".pdf,.doc,.docx"
