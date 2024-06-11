@@ -11,15 +11,29 @@ import {
   Container,
   Row,
   Col,
+  Toast,
+  Spinner,
 } from "react-bootstrap";
 
 import axios from "axios";
 import FormData from "form-data";
-const apiURL = "http://192.168.1.243:8080/formatter/api/";
+const baseURL = "http://192.168.1.243:8080/formatter/api/";
 
 function ResumeFormat() {
   const [files, setFiles] = useState(null);
   const [fileUploaded, setFileUploaded] = useState(null);
+  const [toast, setToast] = useState({
+    variant: "primary",
+    show: false,
+    heading: "Sample Head",
+    message: "Messsage",
+  });
+  const [spinStatus, setSpinStatus] = useState(false);
+
+  const aRef = useRef();
+
+  const [url, setFileUrl] = useState();
+
   const inputRef = useRef();
 
   const handleDragOver = (event) => {
@@ -31,30 +45,148 @@ function ResumeFormat() {
     setFiles(event.dataTransfer.files);
   };
 
-  const handleUpload = (files) => {
+  const handleUpload = async (files) => {
+    setSpinStatus(true);
     console.log("files uploaded:", files);
-
-    const form = new FormData();
-    form.append("files", files);
-    // form.append("my_buffer", new Buffer(10));
-    // form.append("my_file", fs.createReadStream("/foo/bar.jpg"));
-
-    axios
-      .post(apiURL + "uploadFiles", form)
-      .then((response) => {
-        console.log("Axios- -Raju -:", JSON.stringify(response));
-        // setPosts(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+    const formData = new FormData();
+    for (let file of files) {
+      formData.append("files", file);
+    }
+    try {
+      const response = await axios.post(baseURL + "uploadFiles", formData);
+      console.log("Axios-:", JSON.stringify(response));
+      // setPosts(response.data);
+      setSpinStatus(false);
+      setToast({
+        variant: "success",
+        show: true,
+        heading: "Resume Upload",
+        message: "Documents are uploaded successfully!",
       });
+      setFileUploaded(true);
+    } catch (error) {
+      console.log(error);
+      setSpinStatus(false);
+      setToast({
+        variant: "danger",
+        show: true,
+        heading: "Resume Upload",
+        message: "Documents failed to upload",
+      });
+    }
+  };
 
-    setFileUploaded(true);
+  const handleFormat = async () => {
+    setSpinStatus(true);
+    console.log("files formatting:");
+    try {
+      const response = await axios.post(baseURL + "formatDoc?");
+      console.log("Axios2-:", JSON.stringify(response));
+      setSpinStatus(false);
+      setToast({
+        variant: "success",
+        show: true,
+        heading: "Resume Format",
+        message: "Documents are formatted successfully!",
+      });
+      setFileUploaded(true);
+    } catch (error) {
+      console.log(error);
+      setSpinStatus(false);
+      setToast({
+        variant: "danger",
+        show: true,
+        heading: "Resume Format",
+        message: "Documents failed to format",
+      });
+    }
+  };
+
+  const downloadFormattedFiles = async () => {
+    setSpinStatus(true);
+    console.log("formattedFiles downloading:");
+
+    try {
+      const response = await axios.get(baseURL + "downloadZip");
+      console.log("Axios3-:", JSON.stringify(response));
+      const blob = response?.data && response?.data;
+
+      const data = new Blob([blob]);
+      const objectURL = window.URL.createObjectURL(data);
+      tempLink = document.createElement("a");
+      tempLink.href = objectURL;
+      tempLink.setAttribute("download", "formmatedFiles.zip");
+      tempLink.click();
+
+      setSpinStatus(false);
+      setToast({
+        variant: "success",
+        show: true,
+        heading: "Download Formatted Docs",
+        message: "Formatted Documents are downloaded successfully!",
+      });
+      setFileUploaded(true);
+    } catch (error) {
+      console.log(error);
+      setSpinStatus(false);
+      setToast({
+        variant: "danger",
+        show: true,
+        heading: "Download Formatted Docs",
+        message: "Formatted Documents failed to download",
+      });
+    }
+  };
+
+  const downloadUnformattedFiles = async () => {
+    setSpinStatus(true);
+    console.log("UnformattedFiles downloading:");
+    try {
+      const response = await axios.get(baseURL + "downloadUnformattedFilesZip");
+      console.log("Axios4-:", JSON.stringify(response));
+
+      setSpinStatus(false);
+      setToast({
+        variant: "success",
+        show: true,
+        heading: "Download Unformatted Docs",
+        message: "Unformatted Documents are downloaded successfully!",
+      });
+      setFileUploaded(true);
+    } catch (error) {
+      console.log(error);
+      setSpinStatus(false);
+      setToast({
+        variant: "danger",
+        show: true,
+        heading: "Download Unformatted Docs",
+        message: "Unformatted Documents failed to download",
+      });
+    }
   };
 
   return (
     <>
       <Container fluid>
+        <div className="Toast-box">
+          {spinStatus && <Spinner animation="border" />}
+          {toast && (
+            <Toast
+              className="d-inline-block m-1"
+              bg={toast?.variant && toast?.variant.toLowerCase()}
+              onClose={() => setToast({ show: false })}
+              show={toast?.show}
+              delay={5000}
+              autohide
+            >
+              <Toast.Header closeButton={true}>
+                <strong className="me-auto">{toast?.heading}</strong>
+              </Toast.Header>
+              <Toast.Body></Toast.Body>
+              <Toast.Body className="text-white">{toast?.message}</Toast.Body>
+            </Toast>
+          )}
+        </div>
         <Row>
           <Col md="8">
             <Card className="card-user">
@@ -75,9 +207,7 @@ function ResumeFormat() {
                       <input
                         type="file"
                         multiple
-                        onChange={(event) =>
-                          setFiles([URL.createObjectURL(event.target.files[0])])
-                        }
+                        onChange={(event) => setFiles(event.target.files)}
                         hidden
                         ref={inputRef}
                         accept=".pdf,.doc,.docx"
@@ -101,6 +231,7 @@ function ResumeFormat() {
                     {files && (
                       <div className="uploads">
                         <h5 className="card-title">Selected files</h5>
+                        <hr />
                         <ul className="list-group">
                           {Array.from(files).map((file, idx) => (
                             <li className="list-group-item" key={idx}>
@@ -138,11 +269,6 @@ function ResumeFormat() {
                         <i className="bi bi-upload">Upload files</i>
                       </Button>
                     </div>
-                    {/* <button className="btn btn-outline-primary" type="button">
-                      <i className="bi bi-file-earmark-check-fill">
-                        Format files
-                      </i>
-                    </button> */}
                   </Col>
                 </Row>
                 <Row>
@@ -152,6 +278,7 @@ function ResumeFormat() {
                         type="button"
                         variant="primary"
                         style={{ width: "100%" }}
+                        onClick={() => handleFormat()}
                       >
                         <i className="bi bi-file-earmark-check-fill">
                           Format files
@@ -167,11 +294,16 @@ function ResumeFormat() {
             <Card>
               <Card.Body>
                 <h5 className="card-title">Downloads</h5>
+                <hr />
+                <a href={url} download={name} className="hidden" ref={aRef} />
+
                 <div className="input-group">
                   <Button
                     type="button"
                     variant="primary"
                     style={{ width: "100%" }}
+                    onClick={() => downloadFormattedFiles()}
+                    download
                   >
                     <i className="bi bi-file-earmark-arrow-down-fill">
                       Formatted files
@@ -181,6 +313,7 @@ function ResumeFormat() {
                     type="button"
                     variant="primary"
                     style={{ width: "100%" }}
+                    onClick={() => downloadUnformattedFiles()}
                   >
                     <i className="bi bi-file-earmark-arrow-down">
                       Unformatted files
