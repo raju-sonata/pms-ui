@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import ReactDOM from "react-dom";
 
 // react-bootstrap components
 import {
@@ -107,16 +108,17 @@ function ResumeFormat() {
     console.log("formattedFiles downloading:");
 
     try {
-      const response = await axios.get(baseURL + "downloadZip");
+      const response = await axios.get(baseURL + "downloadZip", {
+        responseType: "blob",
+      });
       console.log("Axios3-:", JSON.stringify(response));
-      const blob = response?.data && response?.data;
 
-      const data = new Blob([blob]);
-      const objectURL = window.URL.createObjectURL(data);
-      tempLink = document.createElement("a");
-      tempLink.href = objectURL;
-      tempLink.setAttribute("download", "formmatedFiles.zip");
-      tempLink.click();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${Date.now()}.zip`);
+      document.body.appendChild(link);
+      link.click();
 
       setSpinStatus(false);
       setToast({
@@ -142,8 +144,18 @@ function ResumeFormat() {
     setSpinStatus(true);
     console.log("UnformattedFiles downloading:");
     try {
-      const response = await axios.get(baseURL + "downloadUnformattedFilesZip");
+      const response = await axios.get(
+        baseURL + "downloadUnformattedFilesZip",
+        { responseType: "blob" }
+      );
       console.log("Axios4-:", JSON.stringify(response));
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${Date.now()}.zip`);
+      document.body.appendChild(link);
+      link.click();
 
       setSpinStatus(false);
       setToast({
