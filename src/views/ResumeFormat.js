@@ -18,7 +18,8 @@ import {
 
 import axios from "axios";
 import FormData from "form-data";
-const baseURL = "http://192.168.1.243:8080/formatter/api/";
+
+const baseURL = "http://192.168.1.143:8080/formatter/api/";
 
 function ResumeFormat() {
   const [files, setFiles] = useState(null);
@@ -30,11 +31,6 @@ function ResumeFormat() {
     message: "Messsage",
   });
   const [spinStatus, setSpinStatus] = useState(false);
-
-  const aRef = useRef();
-
-  const [url, setFileUrl] = useState();
-
   const inputRef = useRef();
 
   const handleDragOver = (event) => {
@@ -48,15 +44,12 @@ function ResumeFormat() {
 
   const handleUpload = async (files) => {
     setSpinStatus(true);
-    console.log("files uploaded:", files);
     const formData = new FormData();
     for (let file of files) {
       formData.append("files", file);
     }
     try {
       const response = await axios.post(baseURL + "uploadFiles", formData);
-      console.log("Axios-:", JSON.stringify(response));
-      // setPosts(response.data);
       setSpinStatus(false);
       setToast({
         variant: "success",
@@ -79,10 +72,8 @@ function ResumeFormat() {
 
   const handleFormat = async () => {
     setSpinStatus(true);
-    console.log("files formatting:");
     try {
       const response = await axios.post(baseURL + "formatDoc?");
-      console.log("Axios2-:", JSON.stringify(response));
       setSpinStatus(false);
       setToast({
         variant: "success",
@@ -105,18 +96,14 @@ function ResumeFormat() {
 
   const downloadFormattedFiles = async () => {
     setSpinStatus(true);
-    console.log("formattedFiles downloading:");
-
     try {
       const response = await axios.get(baseURL + "downloadZip", {
         responseType: "blob",
       });
-      console.log("Axios3-:", JSON.stringify(response));
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${Date.now()}.zip`);
+      link.setAttribute("download", `formatted-${Date.now()}.zip`);
       document.body.appendChild(link);
       link.click();
 
@@ -142,18 +129,16 @@ function ResumeFormat() {
 
   const downloadUnformattedFiles = async () => {
     setSpinStatus(true);
-    console.log("UnformattedFiles downloading:");
     try {
       const response = await axios.get(
         baseURL + "downloadUnformattedFilesZip",
         { responseType: "blob" }
       );
-      console.log("Axios4-:", JSON.stringify(response));
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `${Date.now()}.zip`);
+      link.setAttribute("download", `unformatted-${Date.now()}.zip`);
       document.body.appendChild(link);
       link.click();
 
@@ -306,9 +291,6 @@ function ResumeFormat() {
             <Card>
               <Card.Body>
                 <h5 className="card-title">Downloads</h5>
-                <hr />
-                <a href={url} download={name} className="hidden" ref={aRef} />
-
                 <div className="input-group">
                   <Button
                     type="button"
