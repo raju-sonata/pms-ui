@@ -24,6 +24,9 @@ const baseURL = "http://192.168.1.143:8080/formatter/api/";
 function ResumeFormat() {
   const [files, setFiles] = useState(null);
   const [fileUploaded, setFileUploaded] = useState(null);
+  const [fileFormatted, setFileFormatted] = useState(null);
+  const [formatDownloadCount, setFormatDownloadCount] = useState(0);
+  const [unformatDownloadCount, setUnformatDownloadCount] = useState(0);
   const [toast, setToast] = useState({
     variant: "primary",
     show: false,
@@ -81,7 +84,7 @@ function ResumeFormat() {
         heading: "Resume Format",
         message: "Documents are formatted successfully!",
       });
-      setFileUploaded(true);
+      setFileFormatted(true);
     } catch (error) {
       console.log(error);
       setSpinStatus(false);
@@ -115,6 +118,7 @@ function ResumeFormat() {
         message: "Formatted Documents are downloaded successfully!",
       });
       setFileUploaded(true);
+      setFormatDownloadCount(formatDownloadCount++);
     } catch (error) {
       console.log(error);
       setSpinStatus(false);
@@ -291,33 +295,37 @@ function ResumeFormat() {
             <Card>
               <Card.Body>
                 <h5 className="card-title">Downloads</h5>
-                <div className="input-group">
-                  <Button
-                    type="button"
-                    variant="primary"
-                    style={{ width: "100%" }}
-                    onClick={() => downloadFormattedFiles()}
-                    download
-                  >
-                    <i className="bi bi-file-earmark-arrow-down-fill">
-                      Formatted files
-                    </i>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    style={{ width: "100%" }}
-                    onClick={() => downloadUnformattedFiles()}
-                  >
-                    <i className="bi bi-file-earmark-arrow-down">
-                      Unformatted files
-                    </i>
-                  </Button>
-                </div>
+                {fileFormatted && (
+                  <div className="input-group">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      style={{ width: "100%" }}
+                      onClick={() => downloadFormattedFiles()}
+                      download
+                    >
+                      <i className="bi bi-file-earmark-arrow-down-fill">
+                        Formatted files
+                      </i>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      style={{ width: "100%" }}
+                      onClick={() => downloadUnformattedFiles()}
+                    >
+                      <i className="bi bi-file-earmark-arrow-down">
+                        Unformatted files
+                      </i>
+                    </Button>
+                  </div>
+                )}
                 <hr></hr>
                 <h5 className="card-title">Downloaded times</h5>
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item">1 time</li>
+                  <li className="list-group-item">
+                    {formatDownloadCount} time
+                  </li>
                 </ul>
               </Card.Body>
             </Card>
