@@ -25,8 +25,8 @@ function ResumeFormat() {
   const [files, setFiles] = useState(null);
   const [fileUploaded, setFileUploaded] = useState(null);
   const [fileFormatted, setFileFormatted] = useState(null);
-  const [formatDownloadCount, setFormatDownloadCount] = useState(0);
-  const [unformatDownloadCount, setUnformatDownloadCount] = useState(0);
+  let [formatDownloadCount, setFormatDownloadCount] = useState(0);
+  let [unformatDownloadCount, setUnformatDownloadCount] = useState(0);
   const [toast, setToast] = useState({
     variant: "primary",
     show: false,
@@ -118,7 +118,7 @@ function ResumeFormat() {
         message: "Formatted Documents are downloaded successfully!",
       });
       setFileUploaded(true);
-      setFormatDownloadCount(formatDownloadCount++);
+      setFormatDownloadCount(++formatDownloadCount);
     } catch (error) {
       console.log(error);
       setSpinStatus(false);
@@ -154,6 +154,7 @@ function ResumeFormat() {
         message: "Unformatted Documents are downloaded successfully!",
       });
       setFileUploaded(true);
+      setUnformatDownloadCount(++unformatDownloadCount);
     } catch (error) {
       console.log(error);
       setSpinStatus(false);
@@ -235,7 +236,11 @@ function ResumeFormat() {
                         <hr />
                         <ul className="list-group">
                           {Array.from(files).map((file, idx) => (
-                            <li className="list-group-item" key={idx}>
+                            <li
+                              className="list-group-item"
+                              key={idx}
+                              style={{ backgroundColor: "yellow" }}
+                            >
                               {file.name}
                             </li>
                           ))}
@@ -321,10 +326,21 @@ function ResumeFormat() {
                   </div>
                 )}
                 <hr></hr>
-                <h5 className="card-title">Downloaded times</h5>
+                <h5 className="card-title">Downloaded count</h5>
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item">
-                    {formatDownloadCount} time
+                  <li
+                    className="list-group-item"
+                    style={{ backgroundColor: "#00a500", color: "white" }}
+                  >
+                    Formatted files: {formatDownloadCount}{" "}
+                    {formatDownloadCount > 1 ? "times" : "time"}
+                  </li>
+                  <li
+                    className="list-group-item"
+                    style={{ backgroundColor: "#d90000c9", color: "white" }}
+                  >
+                    Unformatted files: {unformatDownloadCount}{" "}
+                    {unformatDownloadCount > 1 ? "times" : "time"}
                   </li>
                 </ul>
               </Card.Body>
