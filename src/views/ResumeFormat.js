@@ -35,7 +35,6 @@ function ResumeFormat() {
   });
   const [spinStatus, setSpinStatus] = useState(false);
   const inputRef = useRef();
-  cd;
 
   const handleDragOver = (event) => {
     event.preventDefault();
