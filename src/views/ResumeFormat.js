@@ -50,7 +50,7 @@ function ResumeFormat() {
       setFiles(files);
     } else {
       // the cancel event logics will always land here
-      setFiles(null);
+      setCancel();
     }
   };
 
@@ -176,6 +176,12 @@ function ResumeFormat() {
     }
   };
 
+  const setCancel = () => {
+    setFiles(null);
+    setFileUploaded(null);
+    setFileFormatted(null);
+  };
+
   return (
     <>
       <Container fluid>
@@ -261,7 +267,7 @@ function ResumeFormat() {
                             <Button
                               type="button"
                               variant="danger"
-                              onClick={() => setFiles(null)}
+                              onClick={() => setCancel()}
                             >
                               <i className="nc-icon nc-simple-remove icon-bold" />
                               Cancel
